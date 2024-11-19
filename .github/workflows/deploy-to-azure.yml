@@ -1,0 +1,37 @@
+name: Deploy React App to Azure App Service
+
+on:
+  push:
+    branches:
+      - main  # You can also choose another branch if preferred
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # The environment to run the job
+
+    steps:
+    # Step 1: Checkout code from GitHub repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js environment (use version 18 or whichever you prefer)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Step 4: Build the React app (creates the build folder)
+    - name: Build React app
+      run: npm run build
+
+    # Step 5: Deploy to Azure using the publish profile stored in GitHub Secrets
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: weather-react-app  # Replace with your Azure App Service name
+        slot-name: production  # Optional: use 'production' for main or 'staging' for a test slot
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # This references the secret you added earlier

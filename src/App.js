@@ -53,7 +53,7 @@ const App = () => {
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif", textAlign: "center" }}>
-      <h1>5-Day / 3-Hour Weather Forecast</h1>
+      <h1> Arpudha 5-Day / 3-Hour Weather Forecast</h1>
 
       {/* Dropdown for selecting city */}
       <select value={city} onChange={handleCityChange} style={{ padding: "10px", margin: "20px" }}>

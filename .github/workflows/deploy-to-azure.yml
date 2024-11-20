@@ -3,7 +3,7 @@ name: Build and Deploy React App to Azure App Service
 on:
   push:
     branches:
-      - master
+      - master  # Change this from main to master
 
 jobs:
   build-and-deploy:
@@ -27,16 +27,21 @@ jobs:
     - name: Build Docker Image
       run: docker build -t devopsanna.azurecr.io/weather-app:latest .
 
-    - name: Login to Azure Container Registry
-      run: |
-        az acr login --name devopsanna
+    - name: Log in to Azure using Service Principal
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Login to Azure Container Registry (ACR)
+      run: az acr login --name devopsanna
 
     - name: Push Docker Image to ACR
-      run: |
-        docker push devopsanna.azurecr.io/weather-app:latest
+      run: docker push devopsanna.azurecr.io/weather-app:latest
 
     - name: Deploy to Azure App Service
-      uses: azure/webapps-deploy@v2.0.0  # Correct version for deploying containers
+      uses: azure/webapps-container-deploy@v2
       with:
         app-name: weather-react-app
         resource-group: Devops

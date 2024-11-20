@@ -3,7 +3,7 @@ name: Build and Deploy React App to Azure App Service
 on:
   push:
     branches:
-      - master  # Change this from main to master
+      - master  # Ensure you're using the 'master' branch
 
 jobs:
   build-and-deploy:
@@ -41,7 +41,7 @@ jobs:
       run: docker push devopsanna.azurecr.io/weather-app:latest
 
     - name: Deploy to Azure App Service
-      uses: azure/webapps-container-deploy@v2
+      uses: azure/webapps-container-deploy@2.0.0   # Use version 2.0.0
       with:
         app-name: weather-react-app
         resource-group: Devops

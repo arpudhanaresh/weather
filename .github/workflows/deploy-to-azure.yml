@@ -41,7 +41,7 @@ jobs:
       run: docker push devopsanna.azurecr.io/weather-app:latest
 
     - name: Deploy to Azure App Service
-      uses: azure/webapps-container-deploy@v2   # Use the latest available version
+      uses: azure/webapps-deploy@v2  # Use the webapps-deploy action
       with:
         app-name: weather-react-app
         resource-group: Devops

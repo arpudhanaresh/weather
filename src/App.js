@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./App.css";
 
 const App = () => {
   const [forecast, setForecast] = useState([]);
@@ -8,6 +9,7 @@ const App = () => {
   const [city, setCity] = useState("Chennai");  // Default city
   const [lat, setLat] = useState(13.0827);  // Latitude for Chennai
   const [lon, setLon] = useState(80.2707);  // Longitude for Chennai
+  const [unit, setUnit] = useState("metric"); // Default unit to Celsius
 
   const API_KEY = "94256124b60a1afd523d8da129a3cc60";  // Your valid API key
 
@@ -23,7 +25,7 @@ const App = () => {
     { name: "Pondicherry", lat: 11.9416, lon: 79.8083 }
   ];
 
-  const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+  const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${unit}`;
 
   useEffect(() => {
     const fetchForecast = async () => {
@@ -38,7 +40,7 @@ const App = () => {
     };
 
     fetchForecast();
-  }, [URL]);  // Re-fetch data when the URL changes
+  }, [URL]);  // Re-fetch data when the URL or unit changes
 
   const handleCityChange = (event) => {
     const selectedCity = event.target.value;
@@ -48,37 +50,48 @@ const App = () => {
     setLon(cityData.lon);
   };
 
-  if (loading) return <p>Loading...</p>;
+  const toggleUnit = () => {
+    setUnit((prevUnit) => (prevUnit === "metric" ? "imperial" : "metric"));
+  };
+
+  const convertTemperature = (temp) => {
+    if (unit === "imperial") {
+      return (temp * 9) / 5 + 32;
+    }
+    return temp;
+  };
+
+  if (loading) return <p className="loading">Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", textAlign: "center" }}>
-      <h1> Arpudha 5-Day / 3-Hour Weather Forecast</h1>
+    <div className="app">
+      <header className="hero-section">
+        <h1>Arpudha 5-Day / 3-Hour Weather Forecast</h1>
+      </header>
 
-      {/* Dropdown for selecting city */}
-      <select value={city} onChange={handleCityChange} style={{ padding: "10px", margin: "20px" }}>
-        {cities.map((city) => (
-          <option key={city.name} value={city.name}>
-            {city.name}
-          </option>
-        ))}
-      </select>
+      <div className="controls">
+        <select value={city} onChange={handleCityChange} className="city-dropdown">
+          {cities.map((city) => (
+            <option key={city.name} value={city.name}>
+              {city.name}
+            </option>
+          ))}
+        </select>
 
-      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+        <button onClick={toggleUnit} className="unit-toggle">
+          Toggle {unit === "metric" ? "°C" : "°F"}
+        </button>
+      </div>
+
+      <div className="forecast-container">
         {forecast.map((entry, index) => (
-          <div
-            key={index}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "16px",
-              margin: "8px",
-              width: "150px",
-              backgroundColor: "#f9f9f9",
-            }}
-          >
+          <div key={index} className="forecast-card">
             <h3>{new Date(entry.dt * 1000).toLocaleString()}</h3>
-            <p>Temp: {entry.main.temp}°C</p>
+            <p>
+              Temp: {convertTemperature(entry.main.temp).toFixed(1)}&deg;
+              {unit === "metric" ? "C" : "F"}
+            </p>
             <p>Humidity: {entry.main.humidity}%</p>
             <p>{entry.weather[0].description}</p>
           </div>
